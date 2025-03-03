@@ -1,20 +1,38 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import VaultHeader from '@/components/VaultHeader';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import StatCard from '@/components/StatCard';
 import DepositForm from '@/components/DepositForm';
 import InfoTooltip from '@/components/InfoTooltip';
 import { toast } from 'sonner';
+import { useWeb3 } from '@/context/Web3Context';
+import ConnectWalletButton from '@/components/ConnectWalletButton';
 
 const Index = () => {
-  const [lastHarvest] = useState<Date>(new Date(Date.now() - 14 * 60 * 1000)); // 14 minutes ago
+  const { 
+    isConnected, 
+    vaultMetadata, 
+    userData,
+    refreshVaultData 
+  } = useWeb3();
+  
   const [yourDeposit, setYourDeposit] = useState<number>(0);
+
+  // Update user deposit from blockchain data
+  useEffect(() => {
+    if (userData) {
+      setYourDeposit(parseFloat(userData.balance));
+    }
+  }, [userData]);
 
   const handleDeposit = (amount: number, token: string) => {
     console.log(`Deposited ${amount} ${token}`);
     setYourDeposit(prev => prev + amount);
     toast.success(`Successfully deposited ${amount} ${token} into the Coinchange BTC vault`);
+    
+    // Refresh data from blockchain
+    refreshVaultData();
   };
 
   // Format the time since last harvest
@@ -39,12 +57,15 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-vault-dark text-white">
       <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-6">
-        <VaultHeader title="Coinchange BTC Vault" />
+        <div className="flex justify-between items-center mb-6">
+          <VaultHeader title="Coinchange BTC Vault" />
+          <ConnectWalletButton />
+        </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
           <StatCard 
             label="TVL" 
-            value="$1.62M" 
+            value={vaultMetadata ? `$${parseFloat(vaultMetadata.totalSupply).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "$1.62M"} 
             subValue="$2.69M" 
             tooltip="Total Value Locked in the Coinchange BTC Vault"
             isAnimated={true}
@@ -52,7 +73,7 @@ const Index = () => {
           
           <StatCard 
             label="APY" 
-            value="4.14%" 
+            value={vaultMetadata ? `${vaultMetadata.apy}%` : "4.14%"} 
             subValue="3.87%" 
             tooltip="Annual Percentage Yield - the rate of return on your investment"
             isAnimated={true}
@@ -60,7 +81,7 @@ const Index = () => {
           
           <StatCard 
             label="DAILY" 
-            value="0.011%" 
+            value={vaultMetadata ? `${(parseFloat(vaultMetadata.apy) / 365).toFixed(3)}%` : "0.011%"} 
             subValue="0.0104%" 
             tooltip="Daily interest rate based on the current APY"
             isAnimated={true}
@@ -89,7 +110,7 @@ const Index = () => {
               
               <StatCard 
                 label="LAST HARVEST" 
-                value={formatTimeSince(lastHarvest)}
+                value={vaultMetadata ? formatTimeSince(vaultMetadata.lastHarvest) : "14 minutes ago"}
                 isAnimated={true}
               />
             </div>
@@ -100,7 +121,10 @@ const Index = () => {
                 <TabsTrigger value="withdraw" className="text-base">Withdraw</TabsTrigger>
               </TabsList>
               <TabsContent value="deposit" className="mt-4 space-y-4">
-                <DepositForm onDeposit={handleDeposit} depositFee={0} />
+                <DepositForm 
+                  onDeposit={handleDeposit} 
+                  depositFee={vaultMetadata ? parseFloat(vaultMetadata.depositFee) : 0} 
+                />
                 
                 <div className="bg-vault-dark p-4 rounded-lg border border-vault-light/30 text-sm text-muted-foreground">
                   <div className="flex items-center gap-1 mb-2">

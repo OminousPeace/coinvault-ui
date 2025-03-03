@@ -11,6 +11,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { toast } from 'sonner';
+import { useWeb3 } from '@/context/Web3Context';
+import { depositToVault } from '@/utils/contractHelpers';
 
 const tokens = [
   { symbol: 'BTC', name: 'Bitcoin', balance: 0.125 },
@@ -24,10 +26,20 @@ interface DepositFormProps {
 }
 
 const DepositForm: React.FC<DepositFormProps> = ({ onDeposit, depositFee = 0 }) => {
+  const { isConnected, vaultMetadata, provider, refreshVaultData } = useWeb3();
   const [amount, setAmount] = useState<string>('0');
   const [percentage, setPercentage] = useState<number>(0);
   const [selectedToken, setSelectedToken] = useState(tokens[0]);
   const [popoverOpen, setPopoverOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  
+  // Update deposit fee from smart contract
+  useEffect(() => {
+    if (vaultMetadata) {
+      // The deposit fee is now coming from the smart contract
+      // We could do this in the parent component, but for simplicity we'll handle it here
+    }
+  }, [vaultMetadata]);
 
   const handleSliderChange = (newValue: number[]) => {
     const newPercentage = newValue[0];
@@ -52,7 +64,7 @@ const DepositForm: React.FC<DepositFormProps> = ({ onDeposit, depositFee = 0 }) 
     }
   };
 
-  const handleDeposit = () => {
+  const handleDeposit = async () => {
     const numAmount = parseFloat(amount);
     if (isNaN(numAmount) || numAmount <= 0) {
       toast.error('Please enter a valid amount');
@@ -64,12 +76,41 @@ const DepositForm: React.FC<DepositFormProps> = ({ onDeposit, depositFee = 0 }) 
       return;
     }
     
-    onDeposit(numAmount, selectedToken.symbol);
-    toast.success(`Successfully deposited ${numAmount} ${selectedToken.symbol}`);
+    if (!isConnected || !provider) {
+      toast.error('Please connect your wallet first');
+      return;
+    }
     
-    // Reset form
-    setAmount('0');
-    setPercentage(0);
+    setIsLoading(true);
+    
+    try {
+      // Call the contract to deposit
+      const tx = await depositToVault(provider, amount);
+      
+      // Show pending toast
+      toast.loading('Transaction pending...', { id: 'deposit' });
+      
+      // Wait for transaction to complete
+      await tx.wait();
+      
+      // Call the callback to update UI
+      onDeposit(numAmount, selectedToken.symbol);
+      
+      // Update vault data
+      await refreshVaultData();
+      
+      // Show success toast
+      toast.success(`Successfully deposited ${amount} ${selectedToken.symbol}`, { id: 'deposit' });
+      
+      // Reset form
+      setAmount('0');
+      setPercentage(0);
+    } catch (error) {
+      console.error('Deposit error:', error);
+      toast.error('Failed to deposit: ' + (error as Error).message, { id: 'deposit' });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const selectToken = (token: typeof selectedToken) => {
@@ -83,6 +124,12 @@ const DepositForm: React.FC<DepositFormProps> = ({ onDeposit, depositFee = 0 }) 
   // Format for display
   const formatBalance = (balance: number) => {
     return balance < 0.001 ? balance.toFixed(8) : balance.toFixed(4);
+  };
+
+  // Calculate the fee
+  const calculateFee = () => {
+    if (!vaultMetadata) return depositFee;
+    return parseFloat(vaultMetadata.depositFee);
   };
 
   return (
@@ -185,7 +232,7 @@ const DepositForm: React.FC<DepositFormProps> = ({ onDeposit, depositFee = 0 }) 
             Deposit Fee
             <InfoTooltip content="The fee charged for depositing into the vault" />
           </div>
-          <div>{depositFee}%</div>
+          <div>{calculateFee()}%</div>
         </div>
         
         <div className="flex justify-between text-sm">
@@ -203,14 +250,18 @@ const DepositForm: React.FC<DepositFormProps> = ({ onDeposit, depositFee = 0 }) 
       
       <Button 
         className="w-full bg-primary hover:bg-primary/80 text-white font-medium py-6"
-        disabled={parseFloat(amount) <= 0 || parseFloat(amount) > selectedToken.balance}
+        disabled={!isConnected || parseFloat(amount) <= 0 || parseFloat(amount) > selectedToken.balance || isLoading}
         onClick={handleDeposit}
       >
-        {parseFloat(amount) > selectedToken.balance 
-          ? 'Insufficient Balance' 
-          : parseFloat(amount) <= 0 
-            ? 'Enter Amount' 
-            : 'Deposit'}
+        {!isConnected 
+          ? 'Connect Wallet' 
+          : parseFloat(amount) > selectedToken.balance 
+            ? 'Insufficient Balance' 
+            : parseFloat(amount) <= 0 
+              ? 'Enter Amount' 
+              : isLoading 
+                ? 'Processing...' 
+                : 'Deposit'}
       </Button>
     </div>
   );
