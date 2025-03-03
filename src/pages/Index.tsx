@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import VaultHeader from '@/components/VaultHeader';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -88,33 +87,26 @@ const Index = () => {
           />
         </div>
         
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
-          <div className="lg:col-span-2 bg-vault rounded-xl p-4 border border-vault-light/50">
-            <div className="flex justify-center items-center h-full">
-              <div className="text-center p-8">
-                <h3 className="text-xl font-medium mb-2">Coinchange BTC Vault</h3>
-                <p className="text-muted-foreground">
-                  Deposit BTC to earn yield through our diversified strategy
-                </p>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div className="lg:col-span-2 space-y-4">
+            <div className="bg-vault rounded-xl p-6 border border-vault-light/50">
+              <div className="grid grid-cols-2 gap-4">
+                <StatCard 
+                  label="YOUR DEPOSIT" 
+                  value={yourDeposit === 0 ? "0" : yourDeposit.toFixed(4)}
+                  isAnimated={true}
+                />
+                
+                <StatCard 
+                  label="LAST HARVEST" 
+                  value={vaultMetadata ? formatTimeSince(vaultMetadata.lastHarvest) : "14 minutes ago"}
+                  isAnimated={true}
+                />
               </div>
             </div>
           </div>
           
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <StatCard 
-                label="YOUR DEPOSIT" 
-                value={yourDeposit === 0 ? "0" : yourDeposit.toFixed(4)}
-                isAnimated={true}
-              />
-              
-              <StatCard 
-                label="LAST HARVEST" 
-                value={vaultMetadata ? formatTimeSince(vaultMetadata.lastHarvest) : "14 minutes ago"}
-                isAnimated={true}
-              />
-            </div>
-            
             <Tabs defaultValue="deposit" className="w-full">
               <TabsList className="grid grid-cols-2 bg-vault-light h-12">
                 <TabsTrigger value="deposit" className="text-base">Deposit</TabsTrigger>
