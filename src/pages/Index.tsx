@@ -4,7 +4,6 @@ import VaultHeader from '@/components/VaultHeader';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import StatCard from '@/components/StatCard';
 import DepositForm from '@/components/DepositForm';
-import HistoricalRateChart from '@/components/HistoricalRateChart';
 import InfoTooltip from '@/components/InfoTooltip';
 import { toast } from 'sonner';
 
@@ -69,8 +68,15 @@ const Index = () => {
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
-          <div className="lg:col-span-2">
-            <HistoricalRateChart />
+          <div className="lg:col-span-2 bg-vault rounded-xl p-4 border border-vault-light/50">
+            <div className="flex justify-center items-center h-full">
+              <div className="text-center p-8">
+                <h3 className="text-xl font-medium mb-2">Coinchange BTC Vault</h3>
+                <p className="text-muted-foreground">
+                  Deposit BTC to earn yield through our diversified strategy
+                </p>
+              </div>
+            </div>
           </div>
           
           <div className="space-y-4">
