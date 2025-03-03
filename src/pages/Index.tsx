@@ -88,19 +88,20 @@ const Index = () => {
           />
         </div>
         
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
-          <div className="lg:col-span-2 bg-vault rounded-xl p-4 border border-vault-light/50">
-            <div className="flex justify-center items-center h-full">
-              <div className="text-center p-8">
-                <h3 className="text-xl font-medium mb-2">Coinchange BTC Vault</h3>
-                <p className="text-muted-foreground">
-                  Deposit BTC to earn yield through our diversified strategy
-                </p>
-              </div>
+        {/* Adding back the Coinchange BTC Vault heading and description */}
+        <div className="bg-vault rounded-xl p-4 border border-vault-light/50 mb-6">
+          <div className="flex justify-center items-center">
+            <div className="text-center p-6">
+              <h3 className="text-xl font-medium mb-2">Coinchange BTC Vault</h3>
+              <p className="text-muted-foreground">
+                Deposit BTC to earn yield through our diversified strategy
+              </p>
             </div>
           </div>
-          
-          <div className="space-y-4">
+        </div>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div className="lg:col-span-2 space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <StatCard 
                 label="YOUR DEPOSIT" 
@@ -114,7 +115,9 @@ const Index = () => {
                 isAnimated={true}
               />
             </div>
-            
+          </div>
+          
+          <div className="space-y-4">
             <Tabs defaultValue="deposit" className="w-full">
               <TabsList className="grid grid-cols-2 bg-vault-light h-12">
                 <TabsTrigger value="deposit" className="text-base">Deposit</TabsTrigger>
