@@ -12,12 +12,12 @@ interface VaultHeaderProps {
 }
 
 const VaultHeader: React.FC<VaultHeaderProps> = ({ 
-  title = 'CFBTC',
+  title = 'cDSUSD',
   chain = 'Ethereum',
   platform = 'Coinchange'
 }) => {
   const handleCopy = () => {
-    navigator.clipboard.writeText('Coinchange BTC Vault');
+    navigator.clipboard.writeText('Coinchange DeFi Simple USD vault');
     toast.success('Copied to clipboard!');
   };
   

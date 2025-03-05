@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import VaultHeader from '@/components/VaultHeader';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -8,6 +7,7 @@ import InfoTooltip from '@/components/InfoTooltip';
 import { toast } from 'sonner';
 import { useWeb3 } from '@/context/Web3Context';
 import ConnectWalletButton from '@/components/ConnectWalletButton';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const Index = () => {
   const { 
@@ -29,7 +29,7 @@ const Index = () => {
   const handleDeposit = (amount: number, token: string) => {
     console.log(`Deposited ${amount} ${token}`);
     setYourDeposit(prev => prev + amount);
-    toast.success(`Successfully deposited ${amount} ${token} into the Coinchange BTC vault`);
+    toast.success(`Successfully deposited ${amount} ${token} into the Coinchange DeFi Simple USD vault`);
     
     // Refresh data from blockchain
     refreshVaultData();
@@ -54,11 +54,39 @@ const Index = () => {
     return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
   };
 
+  // Generate sample data for TVL chart
+  const generateTVLData = () => {
+    const data = [];
+    const startDate = new Date('2025-01-01');
+    const endDate = new Date('2025-03-05');
+    
+    // Calculate the number of days between start and end
+    const daysDiff = Math.floor((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+    
+    // Generate one data point every 7 days
+    for (let i = 0; i <= daysDiff; i += 7) {
+      const currentDate = new Date(startDate);
+      currentDate.setDate(startDate.getDate() + i);
+      
+      // Generate a somewhat realistic TVL value between 10 and 40
+      const randomTVL = 10 + Math.random() * 30;
+      
+      data.push({
+        date: currentDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+        tvl: randomTVL,
+      });
+    }
+    
+    return data;
+  };
+
+  const tvlData = generateTVLData();
+
   return (
     <div className="min-h-screen bg-vault-dark text-white">
       <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-6">
         <div className="flex justify-between items-center mb-6">
-          <VaultHeader title="Coinchange BTC Vault" />
+          <VaultHeader title="Coinchange DeFi Simple USD vault" />
           <ConnectWalletButton />
         </div>
         
@@ -67,7 +95,7 @@ const Index = () => {
             label="TVL" 
             value={vaultMetadata ? `$${parseFloat(vaultMetadata.totalSupply).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "$1.62M"} 
             subValue="$2.69M" 
-            tooltip="Total Value Locked in the Coinchange BTC Vault"
+            tooltip="Total Value Locked in the Coinchange DeFi Simple USD vault"
             isAnimated={true}
           />
           
@@ -88,7 +116,54 @@ const Index = () => {
           />
         </div>
         
-
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+          <div className="lg:col-span-2 bg-vault rounded-xl p-4 border border-vault-light/50">
+            <div className="flex flex-col h-full">
+              {/* TVL Chart */}
+              <div className="h-64 mb-4">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={tvlData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#444" />
+                    <XAxis 
+                      dataKey="date" 
+                      stroke="#888" 
+                      tick={{ fill: '#888' }}
+                    />
+                    <YAxis 
+                      domain={[0, 50]} 
+                      ticks={[0, 10, 20, 30, 40, 50]} 
+                      stroke="#888" 
+                      tick={{ fill: '#888' }}
+                      label={{ value: 'TVL', angle: -90, position: 'insideLeft', fill: '#888' }}
+                    />
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: '#1a1a2e', border: '1px solid #333' }}
+                      itemStyle={{ color: '#fff' }}
+                      labelStyle={{ color: '#ccc' }}
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="tvl" 
+                      stroke="#4f46e5" 
+                      strokeWidth={2} 
+                      dot={{ r: 4, strokeWidth: 2 }}
+                      activeDot={{ r: 6, stroke: '#fff' }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+              
+              {/* Description at the bottom */}
+              <div className="mt-auto flex justify-center items-center">
+                <div className="text-center p-4">
+                  <h3 className="text-xl font-medium mb-2">Coinchange DeFi Simple USD vault</h3>
+                  <p className="text-muted-foreground">
+                    Deposit USDC or USDT to earn yield on Morpho
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
           
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
@@ -105,17 +180,6 @@ const Index = () => {
               />
             </div>
             
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
-              <div className="lg:col-span-2 bg-vault rounded-xl p-4 border border-vault-light/50">
-                <div className="flex justify-center items-center h-full">
-                  <div className="text-center p-8">
-                    <h3 className="text-xl font-medium mb-2">Coinchange BTC Vault</h3>
-                      <p className="text-muted-foreground">Deposit BTC to earn yield through our diversified strategy
-                    </p>
-                  </div>
-                </div>
-              </div>
-              
             <Tabs defaultValue="deposit" className="w-full">
               <TabsList className="grid grid-cols-2 bg-vault-light h-12">
                 <TabsTrigger value="deposit" className="text-base">Deposit</TabsTrigger>

@@ -1,7 +1,6 @@
-
 import { ethers } from 'ethers';
 
-// ABI for the Coinchange BTC Vault contract
+// ABI for the Coinchange DeFi Simple USD Vault contract
 const VAULT_ABI = [
   // Vault info functions
   "function name() view returns (string)",
@@ -34,8 +33,8 @@ const VAULT_ABI = [
   "event Approval(address indexed owner, address indexed spender, uint256 value)"
 ];
 
-// Contract address from the Veda documentation
-export const VAULT_CONTRACT_ADDRESS = "0x7a86e9D4C95F4f010F637F6360F693b17D199B6E";
+// Updated contract address
+export const VAULT_CONTRACT_ADDRESS = "0xef00b163a04df9960eb7d41e40fc8834589a0677";
 
 // Interface for the vault metadata
 export interface VaultMetadata {
