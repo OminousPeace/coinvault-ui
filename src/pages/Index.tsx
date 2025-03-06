@@ -19,7 +19,6 @@ const Index = () => {
   
   const [yourDeposit, setYourDeposit] = useState<number>(0);
 
-  // Update user deposit from blockchain data
   useEffect(() => {
     if (userData) {
       setYourDeposit(parseFloat(userData.balance));
@@ -31,11 +30,9 @@ const Index = () => {
     setYourDeposit(prev => prev + amount);
     toast.success(`Successfully deposited ${amount} ${token} into the Coinchange DeFi Simple USD vault`);
     
-    // Refresh data from blockchain
     refreshVaultData();
   };
 
-  // Format the time since last harvest
   const formatTimeSince = (date: Date) => {
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
@@ -54,21 +51,17 @@ const Index = () => {
     return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
   };
 
-  // Generate sample data for TVL chart
   const generateTVLData = () => {
     const data = [];
     const startDate = new Date('2025-01-01');
     const endDate = new Date('2025-03-05');
     
-    // Calculate the number of days between start and end
     const daysDiff = Math.floor((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
     
-    // Generate one data point every 7 days
     for (let i = 0; i <= daysDiff; i += 7) {
       const currentDate = new Date(startDate);
       currentDate.setDate(startDate.getDate() + i);
       
-      // Generate a somewhat realistic TVL value between 10 and 40
       const randomTVL = 10 + Math.random() * 30;
       
       data.push({
@@ -119,7 +112,6 @@ const Index = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
           <div className="lg:col-span-2 bg-vault rounded-xl p-4 border border-vault-light/50">
             <div className="flex flex-col h-full">
-              {/* TVL Chart */}
               <div className="h-64 mb-4">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={tvlData}>
@@ -153,7 +145,6 @@ const Index = () => {
                 </ResponsiveContainer>
               </div>
               
-              {/* Description at the bottom */}
               <div className="mt-auto flex justify-center items-center">
                 <div className="text-center p-4">
                   <h3 className="text-xl font-medium mb-2">Coinchange DeFi Simple USD vault</h3>

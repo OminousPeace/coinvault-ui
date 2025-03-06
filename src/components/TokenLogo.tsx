@@ -29,7 +29,7 @@ const TokenLogo: React.FC<TokenLogoProps> = ({ token = 'BTC', size = 'md' }) => 
 
   return (
     <div className={`flex-shrink-0 rounded-full ${sizeClasses[size]} bg-gradient-to-br ${getTokenColor(token)} flex items-center justify-center text-white font-bold shadow-md`}>
-      {token === 'CFBTC' ? '₵' : token === 'cDSUSD' ? '₵' : token.charAt(0)}
+      {token === 'CFBTC' || token === 'cDSUSD' ? '₵' : token.charAt(0)}
     </div>
   );
 };

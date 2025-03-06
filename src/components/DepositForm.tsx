@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
@@ -33,7 +32,6 @@ const DepositForm: React.FC<DepositFormProps> = ({ onDeposit, depositFee = 0 }) 
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   
-  // Update deposit fee from smart contract
   useEffect(() => {
     if (vaultMetadata) {
       // The deposit fee is now coming from the smart contract
@@ -45,7 +43,6 @@ const DepositForm: React.FC<DepositFormProps> = ({ onDeposit, depositFee = 0 }) 
     const newPercentage = newValue[0];
     setPercentage(newPercentage);
     
-    // Calculate amount based on percentage of the selected token's balance
     const calculatedAmount = (selectedToken.balance * newPercentage) / 100;
     setAmount(calculatedAmount.toFixed(calculatedAmount < 0.001 ? 8 : 4));
   };
@@ -53,11 +50,9 @@ const DepositForm: React.FC<DepositFormProps> = ({ onDeposit, depositFee = 0 }) 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target.value;
     
-    // Allow empty input or valid number
     if (input === '' || /^\d*\.?\d*$/.test(input)) {
       setAmount(input);
       
-      // Calculate percentage based on input amount
       const numAmount = parseFloat(input || '0');
       const newPercentage = Math.min(100, (numAmount / selectedToken.balance) * 100);
       setPercentage(isNaN(newPercentage) ? 0 : newPercentage);
@@ -84,25 +79,18 @@ const DepositForm: React.FC<DepositFormProps> = ({ onDeposit, depositFee = 0 }) 
     setIsLoading(true);
     
     try {
-      // Call the contract to deposit
       const tx = await depositToVault(provider, amount);
       
-      // Show pending toast
       toast.loading('Transaction pending...', { id: 'deposit' });
       
-      // Wait for transaction to complete
       await tx.wait();
       
-      // Call the callback to update UI
       onDeposit(numAmount, selectedToken.symbol);
       
-      // Update vault data
       await refreshVaultData();
       
-      // Show success toast
       toast.success(`Successfully deposited ${amount} ${selectedToken.symbol}`, { id: 'deposit' });
       
-      // Reset form
       setAmount('0');
       setPercentage(0);
     } catch (error) {
@@ -116,17 +104,14 @@ const DepositForm: React.FC<DepositFormProps> = ({ onDeposit, depositFee = 0 }) 
   const selectToken = (token: typeof selectedToken) => {
     setSelectedToken(token);
     setPopoverOpen(false);
-    // Reset the amount when changing tokens
     setAmount('0');
     setPercentage(0);
   };
 
-  // Format for display
   const formatBalance = (balance: number) => {
     return balance < 0.001 ? balance.toFixed(8) : balance.toFixed(4);
   };
 
-  // Calculate the fee
   const calculateFee = () => {
     if (!vaultMetadata) return depositFee;
     return parseFloat(vaultMetadata.depositFee);
@@ -238,12 +223,12 @@ const DepositForm: React.FC<DepositFormProps> = ({ onDeposit, depositFee = 0 }) 
         <div className="flex justify-between text-sm">
           <div className="flex items-center">
             You Receive
-            <InfoTooltip content="Amount of CFBTC tokens you'll receive" />
+            <InfoTooltip content="Amount of cDSUSD tokens you'll receive" />
           </div>
           <div className="flex items-center gap-1">
             <span>{amount === '0' ? '0' : amount}</span>
-            <TokenLogo token="CFBTC" size="sm" />
-            <span>CFBTC</span>
+            <TokenLogo token="cDSUSD" size="sm" />
+            <span>cDSUSD</span>
           </div>
         </div>
       </div>
