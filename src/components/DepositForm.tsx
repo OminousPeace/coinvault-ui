@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
@@ -14,9 +15,8 @@ import { useWeb3 } from '@/context/Web3Context';
 import { depositToVault } from '@/utils/contractHelpers';
 
 const tokens = [
-  { symbol: 'BTC', name: 'Bitcoin', balance: 0.125 },
   { symbol: 'USDC', name: 'USD Coin', balance: 5000 },
-  { symbol: 'ETH', name: 'Ethereum', balance: 2.5 },
+  { symbol: 'USDT', name: 'Tether', balance: 3500 },
 ];
 
 interface DepositFormProps {
