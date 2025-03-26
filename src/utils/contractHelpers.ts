@@ -40,7 +40,7 @@ const VAULT_ABI = [
 ];
 
 // Contract address for the cDSUSD vault on Ethereum Mainnet
-export const VAULT_CONTRACT_ADDRESS = "0xA5269A8e31B93Ff27B887B56720A25F844db0529";
+export const VAULT_CONTRACT_ADDRESS = "0xef00B163A04dF9960Eb7D41e40Fc8834589A0677";
 
 // Stablecoin addresses
 export const USDC_ADDRESS = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
