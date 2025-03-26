@@ -12,8 +12,7 @@ const VaultStats: React.FC<VaultStatsProps> = ({ vaultMetadata }) => {
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
       <StatCard 
         label="TVL" 
-        value={vaultMetadata ? `$${parseFloat(vaultMetadata.tvl).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "$1.62M"} 
-        subValue="$2.69M" 
+        value={vaultMetadata ? `$${parseFloat(vaultMetadata.tvl).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "$0.00"} 
         tooltip="Total Value Locked in the Coinchange DeFi Simple USD vault on Morpho"
         isAnimated={true}
       />
