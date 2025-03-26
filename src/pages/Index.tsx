@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import VaultHeader from '@/components/VaultHeader';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -115,7 +114,7 @@ const Index = () => {
           <div className="lg:col-span-2 bg-vault rounded-xl p-4 border border-vault-light/50">
             <div className="flex flex-col h-full">
               <div className="flex justify-between items-center mb-2">
-                <h3 className="text-lg font-medium">Vault Performance</h3>
+                <h3 className="text-lg font-medium">Vault TVL</h3>
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-muted-foreground">All Time</span>
                   <ChevronRight size={16} className="opacity-70" />
