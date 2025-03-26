@@ -30,6 +30,7 @@ const VAULT_ABI = [
   "function getBoringDAOFee() view returns (uint256)",
   "function getPerformanceFee() view returns (uint256)",
   "function getStrategyAddress() view returns (address)",
+  "function getTotalValueLocked() view returns (uint256)",
   
   // Events
   "event Deposit(address indexed caller, address indexed owner, uint256 assets, uint256 shares)",
@@ -51,6 +52,7 @@ export interface VaultMetadata {
   symbol: string;
   decimals: number;
   totalSupply: string;
+  tvl: string;  // Added TVL field
   pricePerShare: string;
   apy: string;
   depositFee: string;
@@ -86,6 +88,7 @@ export const getVaultMetadata = async (provider: ethers.providers.Web3Provider):
     symbol,
     decimals,
     totalSupply,
+    tvl,       // Added TVL fetch
     pricePerShare,
     apy,
     depositFee,
@@ -100,6 +103,7 @@ export const getVaultMetadata = async (provider: ethers.providers.Web3Provider):
     contract.symbol(),
     contract.decimals(),
     contract.totalSupply(),
+    contract.getTotalValueLocked(), // Add call to get TVL from contract
     contract.getPricePerFullShare(),
     contract.getAPY(),
     contract.getDepositFee(),
@@ -113,6 +117,7 @@ export const getVaultMetadata = async (provider: ethers.providers.Web3Provider):
   
   // Convert big numbers to readable strings
   const formattedTotalSupply = ethers.utils.formatUnits(totalSupply, decimals);
+  const formattedTVL = ethers.utils.formatUnits(tvl, decimals);  // Format TVL
   const formattedPricePerShare = ethers.utils.formatUnits(pricePerShare, decimals);
   
   // APY comes in basis points (1 basis point = 0.01%), so divide by 100 to get percentage
@@ -133,6 +138,7 @@ export const getVaultMetadata = async (provider: ethers.providers.Web3Provider):
     symbol,
     decimals,
     totalSupply: formattedTotalSupply,
+    tvl: formattedTVL,  // Add TVL to return object
     pricePerShare: formattedPricePerShare,
     apy: formattedAPY,
     depositFee: formattedDepositFee,
