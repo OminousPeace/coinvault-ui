@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import VaultHeader from '@/components/VaultHeader';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -8,6 +9,7 @@ import { toast } from 'sonner';
 import { useWeb3 } from '@/context/Web3Context';
 import ConnectWalletButton from '@/components/ConnectWalletButton';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { ArrowUpDown, Percent, Clock, ChevronRight } from 'lucide-react';
 
 const Index = () => {
   const { 
@@ -112,6 +114,14 @@ const Index = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
           <div className="lg:col-span-2 bg-vault rounded-xl p-4 border border-vault-light/50">
             <div className="flex flex-col h-full">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="text-lg font-medium">Vault Performance</h3>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">All Time</span>
+                  <ChevronRight size={16} className="opacity-70" />
+                </div>
+              </div>
+              
               <div className="h-64 mb-4">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={tvlData}>
@@ -145,12 +155,31 @@ const Index = () => {
                 </ResponsiveContainer>
               </div>
               
-              <div className="mt-auto flex justify-center items-center">
-                <div className="text-center p-4">
-                  <h3 className="text-xl font-medium mb-2">Coinchange DeFi Simple USD vault</h3>
-                  <p className="text-muted-foreground">
-                    Deposit USDC or USDT to earn yield on Morpho
-                  </p>
+              <div className="mt-auto">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 bg-vault-dark/30 rounded-lg">
+                  <div className="flex items-start gap-2">
+                    <Percent size={18} className="mt-0.5 text-primary" />
+                    <div>
+                      <div className="text-sm text-muted-foreground">DAO Fee</div>
+                      <div className="font-medium">{vaultMetadata ? vaultMetadata.boringDAOFee : '0.1'}%</div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-2">
+                    <ArrowUpDown size={18} className="mt-0.5 text-primary" />
+                    <div>
+                      <div className="text-sm text-muted-foreground">Strategy Allocation</div>
+                      <div className="font-medium">{vaultMetadata ? vaultMetadata.strategyTargetPercentage : '95'}%</div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-2">
+                    <Clock size={18} className="mt-0.5 text-primary" />
+                    <div>
+                      <div className="text-sm text-muted-foreground">Last Harvest</div>
+                      <div className="font-medium">{vaultMetadata ? formatTimeSince(vaultMetadata.lastHarvest) : '14 minutes ago'}</div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -165,8 +194,9 @@ const Index = () => {
               />
               
               <StatCard 
-                label="LAST HARVEST" 
-                value={vaultMetadata ? formatTimeSince(vaultMetadata.lastHarvest) : "14 minutes ago"}
+                label="PRICE PER SHARE" 
+                value={vaultMetadata ? parseFloat(vaultMetadata.pricePerShare).toFixed(6) : "1.0045"}
+                tooltip="Current price of one cDSUSD token"
                 isAnimated={true}
               />
             </div>
@@ -185,7 +215,7 @@ const Index = () => {
                 <div className="bg-vault-dark p-4 rounded-lg border border-vault-light/30 text-sm text-muted-foreground">
                   <div className="flex items-center gap-1 mb-2">
                     <span>The displayed APY accounts for performance fee</span>
-                    <InfoTooltip content="The APY displayed is net of performance fees, which means it's what you'll actually earn after fees are deducted." />
+                    <InfoTooltip content={`A ${vaultMetadata ? vaultMetadata.performanceFee : '10'}% performance fee is deducted from generated yield.`} />
                   </div>
                   <span>that is deducted from the generated yield only.</span>
                 </div>
